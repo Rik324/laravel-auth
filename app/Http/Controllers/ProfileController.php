@@ -2,29 +2,59 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Product;
+use App\Http\Requests\ProfileUpdateRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\View\View;
 
-class ProductController extends Controller
+class ProfileController extends Controller
 {
     /**
-     * Display a listing of all products, grouped by category.
+     * Display the user's profile form.
      */
-    public function index()
+    public function edit(Request $request): View
     {
-        // Fetch all products and group them by their 'category' field
-        $products = Product::all()->groupBy('category');
-
-        // Pass the grouped products to the 'home' view
-        return view('home', compact('products'));
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
     }
 
     /**
-     * Display a single product.
+     * Update the user's profile information.
      */
-    public function show(Product $product)
+    public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        // Pass the specific product to the 'product-show' view
-        return view('product-show', compact('product'));
+        $request->user()->fill($request->validated());
+
+        if ($request->user()->isDirty('email')) {
+            $request->user()->email_verified_at = null;
+        }
+
+        $request->user()->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
+    }
+
+    /**
+     * Delete the user's account.
+     */
+    public function destroy(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('userDeletion', [
+            'password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return Redirect::to('/');
     }
 }
