@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // This line tells Laravel to run your ProductSeeder
+        // This line tells Laravel to run your ProductSeeder.
         $this->call([
             ProductSeeder::class,
         ]);
