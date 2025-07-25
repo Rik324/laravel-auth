@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\QuotationRequest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -13,12 +14,18 @@ class QuotationRequested extends Mailable
 {
     use Queueable, SerializesModels;
 
+    // Define a public property to hold the quotation request data
+    public $quotationRequest;
+
     /**
      * Create a new message instance.
+     *
+     * @return void
      */
-    public function __construct()
+    public function __construct(QuotationRequest $quotationRequest)
     {
-        //
+        // Assign the incoming data to our public property
+        $this->quotationRequest = $quotationRequest;
     }
 
     /**
@@ -27,7 +34,7 @@ class QuotationRequested extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Quotation Requested',
+            subject: 'New Quotation Request for ' . $this->quotationRequest->product_name,
         );
     }
 
@@ -36,8 +43,12 @@ class QuotationRequested extends Mailable
      */
     public function content(): Content
     {
+        // Tell Laravel to use this public property in the email view
         return new Content(
-            view: 'view.name',
+            view: 'emails.quotation-requested',
+            with: [
+                'quotationRequest' => $this->quotationRequest,
+            ],
         );
     }
 

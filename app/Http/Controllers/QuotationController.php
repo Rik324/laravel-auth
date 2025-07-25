@@ -30,7 +30,7 @@ class QuotationController extends Controller
 
         // 3. Send the email notification to yourself
         // Note: We will create the QuotationRequested Mailable in the next step.
-        Mail::to('pinveganex@gmail.com')->send(new QuotationRequested($quotationRequest));
+        Mail::to('rishabhkool786@gmail.com')->send(new QuotationRequested($quotationRequest));
 
         // 4. Redirect the user back with a success message
         return back()->with('success', 'Thank you! Your quotation request has been sent.');
