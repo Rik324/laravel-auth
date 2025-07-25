@@ -3,6 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NinjaController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\QuotationController;
+
+Route::post('/request-quotation', [QuotationController::class, 'store'])->name('quotation.store');
 
 Route::get('/', function () {
     return view('welcome');
